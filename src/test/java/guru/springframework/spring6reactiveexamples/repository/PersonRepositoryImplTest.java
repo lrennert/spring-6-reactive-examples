@@ -7,9 +7,23 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class PersonRepositoryImplTest {
 
     PersonRepository personRepository = new PersonRepositoryImpl();
+
+    @Test
+    void testGetByIdFound() {
+        Mono<Person> personMono = personRepository.getById(3);
+        assertThat(personMono.hasElement().block()).isTrue();
+    }
+
+    @Test
+    void testGetByIdNotFound() {
+        Mono<Person> personMono = personRepository.getById(6);
+        assertThat(personMono.hasElement().block()).isFalse();
+    }
 
     @Test
     void testGetByIdBlock() {
