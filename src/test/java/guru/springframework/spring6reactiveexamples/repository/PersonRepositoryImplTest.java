@@ -80,9 +80,29 @@ class PersonRepositoryImplTest {
 
     @Test
     void testGetByName() {
-        Mono<Person> fionaMono = personRepository.findAll().filter(person -> person.getFirstName().equals("Fiona"))
+        Mono<Person> fionaMono = personRepository.findAll()
+                .filter(person -> person.getFirstName().equals("Fiona"))
                 .next();
 
         fionaMono.subscribe(person -> System.out.println(person.getFirstName()));
+    }
+
+    @Test
+    void testFindPersonByIdNotFound(){
+        Flux<Person> personFlux = personRepository.findAll();
+
+        final Integer id = 8;
+
+        Mono<Person> personMono = personFlux.filter(person -> person.getId().equals(id)).single()
+                .doOnError(throwable -> {
+                    System.out.println("Error occurred in flux");
+                    System.out.println(throwable.toString());
+                });
+
+        personMono.subscribe(System.out::println,
+                throwable -> {
+                    System.out.println("Error occurred in mono");
+                    System.out.println(throwable.toString());
+                });
     }
 }
